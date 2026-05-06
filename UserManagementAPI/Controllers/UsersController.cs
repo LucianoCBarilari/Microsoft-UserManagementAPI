@@ -14,61 +14,96 @@ public class UsersController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<User>> GetAll()
     {
-        return Ok(_users);
+        try
+        {
+            return Ok(_users);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
     }
 
     // GET /api/users/{id}
     [HttpGet("{id}")]
     public ActionResult<User> GetById(int id)
     {
-        var user = _users.FirstOrDefault(u => u.Id == id);
-        if (user is null)
-            return NotFound(new { error = $"User with ID {id} was not found." });
+        try
+        {
+            var user = _users.FirstOrDefault(u => u.Id == id);
+            if (user is null)
+                return NotFound(new { error = $"User with ID {id} was not found." });
 
-        return Ok(user);
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
     }
 
     // POST /api/users
     [HttpPost]
     public ActionResult<User> Create([FromBody] CreateUserRequest request)
     {
-        var user = new User
+        try
         {
-            Id = _nextId++,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            CreatedAt = DateTime.UtcNow
-        };
+            var user = new User
+            {
+                Id = _nextId++,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                CreatedAt = DateTime.UtcNow
+            };
 
-        _users.Add(user);
-        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+            _users.Add(user);
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
     }
 
     // PUT /api/users/{id}
     [HttpPut("{id}")]
     public ActionResult<User> Update(int id, [FromBody] UpdateUserRequest request)
     {
-        var user = _users.FirstOrDefault(u => u.Id == id);
-        if (user is null)
-            return NotFound(new { error = $"User with ID {id} was not found." });
+        try
+        {
+            var user = _users.FirstOrDefault(u => u.Id == id);
+            if (user is null)
+                return NotFound(new { error = $"User with ID {id} was not found." });
 
-        user.FirstName = request.FirstName;
-        user.LastName = request.LastName;
-        user.Email = request.Email;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.Email = request.Email;
 
-        return Ok(user);
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
     }
 
     // DELETE /api/users/{id}
     [HttpDelete("{id}")]
     public ActionResult Delete(int id)
     {
-        var user = _users.FirstOrDefault(u => u.Id == id);
-        if (user is null)
-            return NotFound(new { error = $"User with ID {id} was not found." });
+        try
+        {
+            var user = _users.FirstOrDefault(u => u.Id == id);
+            if (user is null)
+                return NotFound(new { error = $"User with ID {id} was not found." });
 
-        _users.Remove(user);
-        return NoContent();
+            _users.Remove(user);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
     }
 }
